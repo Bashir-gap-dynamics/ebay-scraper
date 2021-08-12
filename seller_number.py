@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[124]:
+
 
 
 import pyautogui
@@ -74,7 +74,6 @@ class automate:
         ####################################################
         self.mObj.click(1250,580)
         number_text = self.mObj.copy_clipboard()
-015152560965
         
         if(number_text.isnumeric()):
             
@@ -148,16 +147,4 @@ objScraper = scraper()
 
 objScraper.number_from_image('test2.png')
 # objScraper.take_image()
-
-
-# In[99]:
-
-
-pyautogui.screenshot(region=(0,0, 300, 400))
-
-
-# In[ ]:
-
-
-
 
