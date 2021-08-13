@@ -3,7 +3,7 @@ from types import prepare_class
 from selenium import webdriver
 import json
 import requests
-
+from pprint import pprint
 from bs4 import BeautifulSoup
 try:
     from PIL import Image
@@ -32,11 +32,9 @@ except ImportError:
 class Hotels:
 
     def __init__(self):
-        self.lst_title = []
+        self.lst_ref_numbered = []
         self.lst_ref = []
-        self.category_flag = False
-        self.dish_flag = False
-        self.final_dict = []
+        self.final_dict = {}
         self.API_KEY = "9f91386be094fb6308102d580a01381c"
 
 
@@ -129,8 +127,6 @@ class Hotels:
         proxies = self.get_proxies()
         print(proxies)
         
-        # driver.get(URL_TO_SCRAPE)
-        # return
         proxy_pool = cycle(proxies)
         headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36"}
         
@@ -141,21 +137,19 @@ class Hotels:
             proxy = next(proxy_pool)
             print("Request proxy: %s "%proxy)
             i += 1
-            # os.system("export HTTP_PROXY=http://"+proxy)
+            os.system("export HTTP_PROXY=http://"+proxy)
             os.system("export HTTPS_PROXY=https://"+proxy)
         
             # export FTP_PROXY=proxy
             s.proxies = {"https": "https://"+proxy}
             r = s.get(URL_TO_SCRAPE, headers=headers, proxies={"http":"http://"+proxy, "https": "https://"+proxy})
-            # r = requests.get(url,proxies={"http":"http://"+proxy, "https": "https://"+proxy})
-            print(r.text)
-            #     break
-            # except:
-            #     #Most free proxies will often get connection errors. You will have retry the entire request using another proxy to work. 
-            #     #We will just skip retries as its beyond the scope of this tutorial and we are only downloading a single url 
-            #     print("Skipping. Connnection error")
-        # r = requests.get(URL_TO_SCRAPE)
-        print(r)
+            try:
+                print(r.text)
+                break
+            except:
+                #Most free proxies will often get connection errors. You will have retry the entire request using another proxy to work. 
+                #We will just skip retries as its beyond the scope of this tutorial and we are only downloading a single url 
+                print("Skipping. Connnection error")
         return
             
 
@@ -164,44 +158,42 @@ class Hotels:
     #scrape the data of the given link
     def scrapData(self, URL_TO_SCRAPE=""):
         record = {}
-        price = title = seller = phone = image = detail = location = category = sub_category = description = brand =None
+        price = title = seller = phone = image = detail = location = category = sub_category = description = brand = date = detail = None
         URL_TO_SCRAPE = 'https://www.ebay-kleinanzeigen.de/s-anzeige/apple-iphone-12-mini-128gb-weiss-neu/1838916714-173-21672'
 
         r = requests.get(self.get_scraperapi_url(URL_TO_SCRAPE))
 
         if r.status_code == 200:
-        # with open('Apple iPhone 11 128 GB E buy cheap _ eBay.html', 'r') as f:
             html = r.text
-            # html = f.read()
-            
             soup = BeautifulSoup(html, 'lxml')
-
+            
             phone_section = soup.select("#viewad-contact-phone")
-            if phone_section:
+            if not phone_section:
                 return None
-
+            
             title_section = soup.select('#viewad-title')     
             if title_section:
                 title = title_section[0].text.strip()
-
+            
             price_section = soup.select('#viewad-price')
             if price_section:
                 price = price_section[0].text.strip()
             
 
-            seller_section = soup.select(".text-body-regular-strong text-force-linebreak")
+            seller_section = soup.select("#viewad-contact")
             if seller_section:
                 seller_name = seller_section[0].find_all('a')
-                seller = seller_name[0].text.strip()
-                # seller = selleer_section[0].select(".text-body-regular-strong text-force-linebreak")
-                # seller = str(((seller[1].text).split("("))[0])
+                seller = seller_name[1].text.strip()
             
 
             
-            category_section = soup.select(".breadcrump-link")
+            category_section = soup.select(".breadcrump-link")    
             if category_section:
-                category_section
-            
+                category_section_1 = category_section[1].find_all("span")
+                category = category_section_1[0].text
+
+                category_section_2 = category_section[2].find_all("span")
+                sub_category = category_section_2[0].text
 
     
             image_section = soup.select('#viewad-image')
@@ -217,22 +209,66 @@ class Hotels:
             if description_section:
                 description = description_section[0].text.strip()
 
+            date_section = soup.select("#viewad-extra-info")
+            if date_section:
+                dated = date_section[0].find_all("span")
+                date = dated[0].text.strip()
+
+
+            brand_section = soup.select(".addetailslist")
+            if brand_section:
+                detail_section_1 = brand_section[0].find_all("li")
+                detail_count = 0
+                for k in detail_section_1:
+                    if detail_count == 0:
+                        temp = k.text.strip()
+                        temp = temp.split("\n")
+                        detail = temp[0].strip()
+                        detail += " : "+temp[1].strip() + "\n"
+                        brand= temp[1].strip()
+                        detail_count += 1
+                        continue
+
+                    temp = k.text.strip()
+                    temp = temp.split("\n")
+                    detail += temp[0].strip()
+                    detail += " : "+temp[1].strip() + "\n" 
+                    detail_count += 1
+
 
             record = {
-                'title': title,
-                'price': price,
-                "brand": brand,
-                'seller': seller,
-                'image': image,
-                'description': description,
-                'location': location,
-                'phone': phone
+                "seller":{
+                    "seller_name": seller,
+                    "seller_email": seller+"@gmail.com",
+                    "password": seller+"1234@gap", 
+                    "store_name":seller+"-store",
+                    "store_email":seller+"-store@gmail.com",
+                    "state":None,
+                    "location":location,
+                    "city": (location.split("-"))[-1].strip(),
+                    "phone":phone,
+                    "country": "Germany"
+                    },
+                "product":[{
+                    'title': title,
+                    'price': price,
+                    "brand": brand,
+                    "category":category,
+                    "sub_category": sub_category,
+                    'seller': seller,
+                    'image': image,
+                    "date":date,
+                    "detail": detail,
+                    'description': description,
+                    'location': location,
+                    'phone': phone
+                }]
             }
 
-            if price == None or title == None or seller == None or image == None or  detail == None:
-                return
-            else:
-                self.final_dict.append(record)
+            return record
+            # pprint(record)
+        return None
+        
 
 
 
@@ -242,14 +278,11 @@ class Hotels:
 
         page_count = 2
         pages_link = "https://www.ebay-kleinanzeigen.de/s-handy-telekom/seite:"+str(page_count)+"/c173"
-        # driver.get('https://www.ebay-kleinanzeigen.de/s-handy-telekom/c173')
+        
         driver.get(pages_link)
-        # r = requests.get("https://www.ebay-kleinanzeigen.de/s-handy-telekom/c173")
-        # print(r)
-        # return
         time.sleep(2)
         elem1 = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div/div[3]/div[2]/div[2]/div[2]')
-        # print(elem1.text)
+        
         li = elem1.find_elements_by_tag_name("a")
         for i in li:
             self.lst_ref.append(i.get_attribute("href"))
@@ -271,34 +304,55 @@ class Hotels:
 
         print(self.lst_ref)
         self.data_write_lst()
+        self.data_write()
         return
 
 
     # making list of links in self.lst_ref1566 of different products 
-    def making_href_links(self, driver):
+    def making_href_links(self):
 
         page_count = 2
-        pages_link = "https://www.ebay-kleinanzeigen.de/s-handy-telekom/seite:"+str(page_count)+"/c173"
+        # pages_link = "https://www.ebay-kleinanzeigen.de/s-handy-telekom/seite:"+str(page_count)+"/c173"
         
-        # r = requests.get("https://www.ebay-kleinanzeigen.de/s-handy-telekom/c173")
-        time.sleep(2)
-        while (page_count < 10):
-            driver.get("https://www.ebay-kleinanzeigen.de/s-handy-telekom/seite:"+str(page_count)+"/c173")
-            time.sleep(2)
-            elem1 = driver.find_element_by_xpath('/html/body/div[1]/div[2]/div/div[3]/div[2]/div[2]/div[2]')
-            # print(elem1.text)
-            li = elem1.find_elements_by_tag_name("a")
-            for i in li:
-                self.lst_ref.append(i.get_attribute("href"))
-            
-            time.sleep(3)
+        r = requests.get(self.get_scraperapi_url("https://www.ebay-kleinanzeigen.de/s-handy-telekom/c173"))
+        if r.status_code == 200:
+            html = r.text
+            soup = BeautifulSoup(html, 'lxml')
+            product_section = soup.select("#srchrslt-adtable")
+            if product_section:
+                product_links = product_section[0].find_all("a")
+                for j in product_links:
+                    self.lst_ref.append("https://www.ebay-kleinanzeigen.de"+j['href'])
+        
+        while (page_count < 0):
+            r = requests.get(self.get_scraperapi_url("https://www.ebay-kleinanzeigen.de/s-handy-telekom/seite:"+str(page_count)+"/c173"))
+            if r.status_code == 200:
+                html = r.text
+                soup = BeautifulSoup(html, 'lxml')
+                product_section = soup.select("#srchrslt-adtable")
+                if product_section:
+                    product_links = product_section[0].find_all("a")
+                    for j in product_links:
+                        self.lst_ref.append("https://www.ebay-kleinanzeigen.de"+j['href'])
             page_count += 1
 
-        print(self.lst_ref)
+        counter = 0
+        for i in self.lst_ref:
+            print(i)
+            data = self.scrapData(i)
+            if data == "None":
+                continue
+            self.final_dict[i] = data
+            self.lst_ref_numbered.append(i)
+            if counter == 10:
+                break
+            counter += 1
         self.data_write_lst()
+        self.data_write()
+        
         return
 
-        
+
 
 
     def creating_file_structure(self):
@@ -365,12 +419,12 @@ class Hotels:
                 
 
     def data_write(self):
-        with open("mobile.json", "w") as outfile:
+        with open("data_unverified.json", "w") as outfile:
             json_object = json.dump(self.final_dict, outfile)
 
     def data_write_lst(self):
         with open('list_product_link.txt', 'w') as filehandle:
-            for listitem in self.lst_ref:
+            for listitem in self.lst_ref_numbered:
                 filehandle.write('%s\n' % listitem)
     
 
@@ -385,6 +439,21 @@ class Hotels:
 
                 # add item to the list
                 r_lst_ref.append(currentPlace)
+
+
+    def read_data_unverified(self):    
+        # Opening JSON file
+        f = open('data.json',)
+        
+        data = json.load(f)
+        
+        # Iterating through the json
+        # list
+        for i in data['emp_details']:
+            print(i)
+        
+        # Closing file
+        f.close()
 
 
     def broswer_open(self):
@@ -416,7 +485,7 @@ if __name__ == "__main__":
     instance = Hotels()
 
     # instance.broswer_open()
-    instance.scrapData()
-    # instance.making_href_links(driver=driver)
+    # instance.scrapData()
+    instance.making_href_links()
     
     # instance.data_write()
