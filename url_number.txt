@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 https://www.ebay-kleinanzeigen.de/s-anzeige/restposten-ueber-10000x-iphone-6-7-8-11-x-xs-xr-handy-panzerglas/1831824126-173-6773,0176-57850373
 https://www.ebay-kleinanzeigen.de/s-anzeige/samsung-galaxy-s21-ultra-5g-256-gb-phantom-black-versiegelt-/1847020830-173-8045,01706360404
 https://www.ebay-kleinanzeigen.de/s-anzeige/telefon-audioline-in-pink/1847112459-173-3371,017622065598
@@ -27,3 +28,6 @@ https://www.ebay-kleinanzeigen.de/s-anzeige/iphone-8-ros-gold/1847120093-173-225
 https://www.ebay-kleinanzeigen.de/s-anzeige/apple-kopfhoerermit-kabel/1847119608-173-1898,0171 5305793
 https://www.ebay-kleinanzeigen.de/s-anzeige/samsung-note-10plus-aura-glow-/1847119294-173-4533,01739853348
 https://www.ebay-kleinanzeigen.de/s-anzeige/iphone-11-pro-max-64gb-silber/1847119184-173-7924,017662844083
+=======
+https://www.ebay-kleinanzeigen.de/s-anzeige/iphone-x-xs-xr-max-display-reparatur-in-20-min-apple-haendler/1754276477-173-1907,02423-9192656
+>>>>>>> 7333b8645531da6f4001fcd25db972a9fbd0c057
