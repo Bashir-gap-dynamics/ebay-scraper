@@ -159,7 +159,7 @@ class Hotels:
     def scrapData(self, URL_TO_SCRAPE=""):
         record = {}
         price = title = seller = phone = image = detail = location = category = sub_category = description = brand = date = detail = None
-        URL_TO_SCRAPE = 'https://www.ebay-kleinanzeigen.de/s-anzeige/apple-iphone-12-mini-128gb-weiss-neu/1838916714-173-21672'
+        
 
         r = requests.get(self.get_scraperapi_url(URL_TO_SCRAPE))
 
@@ -168,7 +168,7 @@ class Hotels:
             soup = BeautifulSoup(html, 'lxml')
             
             phone_section = soup.select("#viewad-contact-phone")
-            if not phone_section:
+            if len(phone_section) == 0:
                 return None
             
             title_section = soup.select('#viewad-title')     
@@ -179,13 +179,13 @@ class Hotels:
             if price_section:
                 price = price_section[0].text.strip()
             
-
-            seller_section = soup.select("#viewad-contact")
-            if seller_section:
-                seller_name = seller_section[0].find_all('a')
-                seller = seller_name[1].text.strip()
-            
-
+            try:
+                seller_section = soup.select("#viewad-contact")
+                if seller_section:
+                    seller_name = seller_section[0].find_all('a')
+                    seller = seller_name[1].text.strip()
+            except:
+                return None
             
             category_section = soup.select(".breadcrump-link")    
             if category_section:
@@ -240,7 +240,7 @@ class Hotels:
                 "seller":{
                     "seller_name": seller,
                     "seller_email": seller+"@gmail.com",
-                    "password": seller+"1234@gap", 
+                    "password": "1234@gap", 
                     "store_name":seller+"-store",
                     "store_email":seller+"-store@gmail.com",
                     "state":None,
@@ -311,20 +311,25 @@ class Hotels:
     # making list of links in self.lst_ref1566 of different products 
     def making_href_links(self):
 
-        page_count = 2
+        page_count = 3
         # pages_link = "https://www.ebay-kleinanzeigen.de/s-handy-telekom/seite:"+str(page_count)+"/c173"
         
-        r = requests.get(self.get_scraperapi_url("https://www.ebay-kleinanzeigen.de/s-handy-telekom/c173"))
-        if r.status_code == 200:
-            html = r.text
-            soup = BeautifulSoup(html, 'lxml')
-            product_section = soup.select("#srchrslt-adtable")
-            if product_section:
-                product_links = product_section[0].find_all("a")
-                for j in product_links:
-                    self.lst_ref.append("https://www.ebay-kleinanzeigen.de"+j['href'])
+        # r = requests.get(self.get_scraperapi_url("https://www.ebay-kleinanzeigen.de/s-handy-telekom/c173"))
+        # # r = requests.get("https://www.ebay-kleinanzeigen.de/s-handy-telekom/c173")
         
-        while (page_count < 0):
+        # if r.status_code == 200:
+        #     html = r.text
+        #     soup = BeautifulSoup(html, 'lxml')
+        #     product_section = soup.select("#srchrslt-adtable")
+        #     if product_section:
+        #         product_links = product_section[0].find_all("a")
+        #         for j in product_links:
+        #             if "https://www.ebay-kleinanzeigen.de"+j['href'] not in self.lst_ref:
+        #                 self.lst_ref.append("https://www.ebay-kleinanzeigen.de"+j['href'])
+        
+        while (page_count < 3):
+            time.sleep(1)
+            print(page_count)
             r = requests.get(self.get_scraperapi_url("https://www.ebay-kleinanzeigen.de/s-handy-telekom/seite:"+str(page_count)+"/c173"))
             if r.status_code == 200:
                 html = r.text
@@ -333,20 +338,20 @@ class Hotels:
                 if product_section:
                     product_links = product_section[0].find_all("a")
                     for j in product_links:
-                        self.lst_ref.append("https://www.ebay-kleinanzeigen.de"+j['href'])
+                        if "https://www.ebay-kleinanzeigen.de"+j['href'] not in self.lst_ref:
+                            self.lst_ref.append("https://www.ebay-kleinanzeigen.de"+j['href'])
             page_count += 1
 
-        counter = 0
+
         for i in self.lst_ref:
             print(i)
+            time.sleep(1)
             data = self.scrapData(i)
-            if data == "None":
+            if data == None:
                 continue
             self.final_dict[i] = data
             self.lst_ref_numbered.append(i)
-            if counter == 10:
-                break
-            counter += 1
+            
         self.data_write_lst()
         self.data_write()
         

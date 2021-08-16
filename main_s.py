@@ -29,14 +29,14 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
-class Hotels:
+class VERIFIEDDATA:
 
     def __init__(self):
         self.lst_ref_numbered = []
         self.lst_ref = []
         self.final_dict = {}
         self.unverified_data = {}
-        self.verfied_data = {}
+        self.verified_data = {}
         self.lst_phone = []
         self.lst_ref_with_phone = {}
         self.API_KEY = "9f91386be094fb6308102d580a01381c"
@@ -403,7 +403,7 @@ class Hotels:
 
 
     # getting images saved into folder ./images 
-    def persist_image(self, folder_path, url):
+    def persist_image(self, url):
         try:
             # headers = {'User-agent': 'Chrome/64.0.3282.186'}
             image_content = requests.get(url).content
@@ -414,21 +414,33 @@ class Hotels:
         try:
             image_file = io.BytesIO(image_content)
             image = Image.open(image_file).convert('RGB')
-            file_path = os.path.join(folder_path,hashlib.sha1(image_content).hexdigest()[:10] + '.jpg')
+            file_path = os.path.join("./images",hashlib.sha1(image_content).hexdigest()[:10] + '.jpg')
             with open(file_path, 'wb') as f:
                 image.save(f, "JPEG", quality=85)
             print(f"SUCCESS - saved {url} - as {file_path}")
+            return file_path
         except Exception as e:
             print(f"ERROR - Could not save {url} - {e}")
+            return None
                 
 
     def data_write(self):
         with open("data_unverified.json", "w") as outfile:
             json_object = json.dump(self.final_dict, outfile)
+    
+    def data_write_verified(self):
+        with open("data_verified.json", "w") as outfile:
+            json_object = json.dump(self.verified_data, outfile)
 
     def data_write_lst(self):
         with open('list_product_link.txt', 'w') as filehandle:
             for listitem in self.lst_ref_numbered:
+                filehandle.write('%s\n' % listitem)
+    
+
+    def data_write_lst_phone_number(self):
+        with open('phone_numbers.txt', 'w') as filehandle:
+            for listitem in self.lst_phone:
                 filehandle.write('%s\n' % listitem)
     
 
@@ -443,7 +455,6 @@ class Hotels:
                 # add item to the list
                 self.lst_phone.append(currentPlace)
         
-        print(self.lst_phone)
 
     
     def data_read_ref_with_phone(self):
@@ -458,7 +469,6 @@ class Hotels:
                 lst = currentPlace.split(",")
                 self.lst_ref_with_phone[lst[0]] = lst[1]
         
-        print(self.lst_ref_with_phone)
 
 
 
@@ -499,8 +509,40 @@ class Hotels:
         webbrowser.get(chrome_path).open(url)
         time.sleep(4)
         webbrowser.open(url)
-        
 
+
+    def main(self):
+        self.data_read_ref_with_phone()
+        self.data_read_phone()
+        self.read_data_unverified()
+        self.read_data_verified()
+        # print(self.verified_data)
+        # print(self.unverified_data)
+        # print(self.lst_phone)
+        # print(self.lst_ref_with_phone)
+        for k,v in self.lst_ref_with_phone.items():
+            if v in self.lst_phone:
+                product = self.unverified_data[k]["product"][0]
+                product["phone"] = v
+                product["image"] = self.persist_image(product["image"])
+                self.verified_data[v]["product"].append(product)
+            else:
+                try:
+                    
+                    self.unverified_data[k]["seller"]["phone"] = v
+                    self.unverified_data[k]["product"][0]["phone"] = v
+                    self.unverified_data[k]["product"][0]["image"] = self.persist_image(self.unverified_data[k]["product"][0]["image"])
+                    self.verified_data[v] = self.unverified_data[k]
+                    pprint(self.verified_data)
+                    self.lst_phone.append(v)
+                except:
+                    continue
+        
+        self.data_write_verified()
+        self.data_write_lst_phone_number()
+
+
+        
 if __name__ == "__main__":
 
     
@@ -508,7 +550,6 @@ if __name__ == "__main__":
 
     # driver = webdriver.Firefox(executable_path="./geckodriver")
     
-    instance = Hotels()
-    instance.data_read_ref_with_phone()
-    instance.data_read_phone()
-    instance.data_
+    instance = VERIFIEDDATA()
+    instance.main()
+    # instance.data_
