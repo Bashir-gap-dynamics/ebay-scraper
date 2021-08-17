@@ -10,6 +10,12 @@ try:
 except ImportError:
     import Image
 
+
+from main_s import VERIFIEDDATA
+from seller_number import main
+from seller_number import mouse
+from seller_number import automate
+
 # from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
@@ -29,7 +35,7 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
-class Hotels:
+class DATAUNVERIFIED:
 
     def __init__(self):
         self.lst_ref_numbered = []
@@ -327,7 +333,7 @@ class Hotels:
         #             if "https://www.ebay-kleinanzeigen.de"+j['href'] not in self.lst_ref:
         #                 self.lst_ref.append("https://www.ebay-kleinanzeigen.de"+j['href'])
         
-        while (page_count < 3):
+        while (page_count < 5):
             time.sleep(1)
             print(page_count)
             r = requests.get(self.get_scraperapi_url("https://www.ebay-kleinanzeigen.de/s-handy-telekom/seite:"+str(page_count)+"/c173"))
@@ -487,10 +493,20 @@ if __name__ == "__main__":
 
     # driver = webdriver.Firefox(executable_path="./geckodriver")
     
-    instance = Hotels()
+    obj = DATAUNVERIFIED()
 
-    # instance.broswer_open()
-    # instance.scrapData()
-    instance.making_href_links()
+    # obj.broswer_open()
+    # obj.scrapData()
+    obj.making_href_links()
+
+    time.sleep(2)
+    print("Extracted data")
+    instance = VERIFIEDDATA()
+    instance.main()
     
-    # instance.data_write()
+    print("Extracted data Verified")
+
+    obj = main()
+    obj.run()
+
+    # obj.data_write()

@@ -13,11 +13,7 @@ ut) Anzeige teilen
 Gewerblicher Nutzer
 Aktiv seit 05.02.2013
 
-<<<<<<< HEAD
-e 024 23 9192 656
-=======
 e 02423-9192656
->>>>>>> 7333b8645531da6f4001fcd25db972a9fbd0c057
 
  
 
@@ -33,11 +29,7 @@ ut) Anzeige teilen
 Gewerblicher Nutzer
 Aktiv seit 05.02.2013
 
-<<<<<<< HEAD
-e +02423-9192657
-=======
 e 02423-9192656
->>>>>>> 7333b8645531da6f4001fcd25db972a9fbd0c057
 
  
 
@@ -88,9 +80,6 @@ ut) Anzeige teilen
 Gewerblicher Nutzer
 Aktiv seit 05.02.2013
 
-<<<<<<< HEAD
-e +02423-9192656
-=======
 e 02423-9192656
 
  
@@ -236,7 +225,6 @@ Gewerblicher Nutzer
 Aktiv seit 05.02.2013
 
 e 02423-9192656
->>>>>>> 7333b8645531da6f4001fcd25db972a9fbd0c057
 
  
 
@@ -255,8 +243,6 @@ Aktiv seit 05.02.2013
 
 e 02423-9192656
 
-<<<<<<< HEAD
-=======
  
 
 vw Zur Merkliste hinzufiig
@@ -275,7 +261,6 @@ e@ 0175-2252627
 14 Anzeigen online Fo F
 
  
->>>>>>> 7333b8645531da6f4001fcd25db972a9fbd0c057
 
  
 
@@ -293,11 +278,7 @@ i@) Zuverlassig
 Privater Nutzer
 Aktiv seit 15.06.2010
 
-<<<<<<< HEAD
-e 0943 8799 9957
-=======
 e 094387999957
->>>>>>> 7333b8645531da6f4001fcd25db972a9fbd0c057
 
  
 
@@ -356,8 +337,6 @@ Aktiv seit 11.01.2015
 
 e 0157 58907079
 
-<<<<<<< HEAD
-=======
  
 
 vw Zur Merkliste hinzufiig
@@ -1885,4 +1864,3 @@ Aktiv seit 05.02.2013
 
 e 02423-9192656
 
->>>>>>> 7333b8645531da6f4001fcd25db972a9fbd0c057
